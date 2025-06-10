@@ -1,0 +1,43 @@
+alias sensor d0
+alias calentador d1
+alias valvula d2
+alias led d3
+alias boton d4
+
+alias metatemp r10
+
+define caliente 37
+define normal 27
+
+inicio:
+yield
+l r0 boton Activate
+beqz r0 iranormal
+move metatemp caliente
+siguetemp:
+l r0 sensor Temperature
+sub r0 r0 273
+s led Setting r0
+add r3 metatemp 3
+bgt r0 r3 ventilar
+l r1 sensor RatioOxygen
+blt r0 0.1 ventilar
+blt r0 metatemp calentar
+s calentador On 0
+s valvula On 0
+j inicio
+
+iranormal:
+move metatemp normal
+j siguetemp
+
+
+ventilar:
+s calentador On 0
+s valvula On 1
+j inicio
+
+calentar:
+s calentador On 1
+s valvula On 0
+j inicio
