@@ -1,5 +1,9 @@
 j inicio
-
+#requiere que los caños que tienen el gas correspondiente tenga un analizador de tuberías y haya un led para mostrar la data, los leds se crean con consolas.
+#poner los nombres con etiquetadora. mucho cuidado de no agregar espacios. no confundir mayúsculas 
+#la temperatura leida en el sensor de gases de donde estan los filtros se muestra sin más
+#de los gases se muestra la presión actual en el color del gas (según mí, O2 blanco, N2 naranja, CO2 gris, H2 rosa y combustible marrón.
+#si un gas tiene otro gas infiltrado muestra en rojo la cantidad de gas que es puro alertando que algo falló. si pasa se recomienda purgar y recomenzar.
 
 inicio:
 yield
