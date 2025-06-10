@@ -1,28 +1,48 @@
+#crear habitacion aparte separada por una puerta (no interior), normal. En ella se deja el huevo y se pone en incubadora (37° C), cuando eclosiona se apaga el boton
+#hay que alimentar la gallina a mano con maiz o soja
+#sensor de gases dentro del gallinero
 alias sensor d0
+#wall heater dentro del gallinero
 alias calentador d1
+#valvula (no genrador de presion, ni pump) valvula que conecta ventilacion pasiva afuera del gallinero y adentro del gallinero, porvee enfriamento y oxigeno si es necesrio.
 alias valvula d2
+#info tempeteratura, console
 alias led d3
+#boton (E/S logica) para cmbiar entre incubadora y gallinero
 alias boton d4
 
+#temperatura objetivo
 alias metatemp r10
 
+#temepratura para incubar y normal. Si se deja en incubar los huevos en la habiatacion eclisoonan y no se pueden recolectar, si se deja en normal las gallinas ya nacidas sobreviven, peor los huevos no incuban
 define caliente 37
 define normal 27
 
 inicio:
+#yield importante
 yield
+#leer boton
 l r0 boton Activate
+#apagdo va a tempertura normal, sino pone la caliente
 beqz r0 iranormal
 move metatemp caliente
+#una vez seteada la temepratura sigue
 siguetemp:
+#lee temp en el gallienro
 l r0 sensor Temperature
+#kelvin a cecius
 sub r0 r0 273
+#debug en led
 s led Setting r0
+#si es 3° mas caliente del objetivo hace mucho calor, hay que ventilar con la sala principal (mas fria, suele hacese a 22 o 25°)
 add r3 metatemp 3
 bgt r0 r3 ventilar
+#si el oxigeno es menos del 10% se asfixi al gallina (esto se ventila si abris la puerta pero por si las dudas.
 l r1 sensor RatioOxygen
 blt r0 0.1 ventilar
+#si la temperatura es muy fria encedemos el caloventor. PEro solo si hay oxigeno, no tiene snetido calentar y luego ventilar.
 blt r0 metatemp calentar
+#si no active nada apago todo
 s calentador On 0
 s valvula On 0
 j inicio
@@ -33,11 +53,13 @@ j siguetemp
 
 
 ventilar:
+#si ventila no claienta
 s calentador On 0
 s valvula On 1
 j inicio
 
 calentar:
+#si calienta no ventila
 s calentador On 1
 s valvula On 0
 j inicio
