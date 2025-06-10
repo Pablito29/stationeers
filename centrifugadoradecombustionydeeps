@@ -23,7 +23,7 @@ sbn HASH("StructureTransformerSmall") HASH("deeps") On 0
 centrifugadora:
 #tinee que estar cerrada o se para
 s centr Open 0
-#leemos rpm y esctress
+#leemos rpm y estress
 l r0 centr Rpm
 l r1 centr Stress
 s debug Color 1
@@ -46,46 +46,62 @@ j centrifugadora
 acelerar:
 #esperar a que regularice
 yield
-#leo el acel
+#leo la injecccion actual de velocidad
 l r0 centr Throttle
-#s debug2 Color 0
+#le agrego la aceleracion, para meter mas
 add r0 r0 acel
 s centr Throttle r0
-#s debug2 Setting r0
+#espero a que haga efecto
 sleep 5
 j inicio
 
 procesa:
+#esperar a que regularice
 yield
+#no caliento
 s centr CombustionLimiter 0
+#carog temperatura
 l r0 centr Temperature
+#si la temperatura es baja caliento
 blt r0 temp calenta
+#si esta alto el estres parada de emergencia
 l r2 centr Stress
 bgt r2 50 reposar
+#leo los elementos porcesados
 l r1 centr Reagents
 s debug2 Setting r1
 s debug2 Color 3
+#si ya se lleno de procesados hayq eu parar para vaciar
 bgt r1 300 parar
+#sino reinicia este ciclo
 j procesa
 
 calenta:
+#abrir el mechero
 s centr CombustionLimiter 1
 j procesa
 
 parar:
+#parada total
 yield
+#veo si hay algo procesado dentro de la maquina, si ya se descargo todo reinicio
 l r1 centr Reagents
 s debug2 Setting r1
+# no pongo 0 porque a veces quedan decimas de gramo de minerales, que no se pueden sacar. Hay que juntarlos con lo del proximo lote
 blt r1 5 inicio
+#abro la maquina y la paro totalmentes y le dejod e inyectar calor
 s centr Open 1
 s centr Throttle 0
 s centr CombustionLimiter 0
 j parar
 
 reposar:
+#parada de emergncia
 yield
+#apago todo
 s centr Throttle 0
 s centr CombustionLimiter 0
+#solo reinicio si el estres es cero.
 l r2 centr Stress
 s debug Setting r2
 s debug Color 4
