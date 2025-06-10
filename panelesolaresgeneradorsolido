@@ -1,27 +1,48 @@
+#sensor de luz diaria ORIENTADO AL ESTE (por dodne amanece)
 alias sensor d0
+#bateria estacionaria, esto va al puerto de data no a la salida deeletricidad (menos a la entrada)
 alias bateria d1
+#generador solido, este programa no lo alimneta, poner tolvas
 alias generador d2
+#mostrar % de carga
 alias debug d3
 
+#yo uso el metodo pragmetico, pone 4 generadores, esperas 2 dias si gastante mas de 5 carbones contruis dos mas y esperas dos dias
+#siempre que gaster 5 carbones o mas en dos dias convien poner dos paneles mas (o muchos si queres ir sobrado)
+
+#minimo y maximo apra generador. No poner valore smuy cercanos o desperdicias carbon
 define minimo 10
+define maximo 15
 
 inicio:
+#importante yield
 yield
+#veo la pos iciond el sol y se la asigno a los paneles solares (verical y horizontal)
+#recomiendo los duales para que este codigo sea independiente del alimentadod e la bateria
+#al ser independiente puede tenr su porpio power area control para no quedar nunca sin energia
+#si se usa otro modelo sumar
 l r0 sensor Vertical
 sb HASH("StructureSolarPanelDual") Vertical r0
 l r0 sensor Horizontal
 add r0 r0 90
 sb HASH("StructureSolarPanelDual") Horizontal r0
 
+#leo la carga de la bateria en porcentaje de carga
 l r0 bateria Ratio
+#quiero poner el % multiplico por 100 y redondeo
 mul r1 r0 100
 round r0 r0
+#alk cartel
 s debug Setting r1
+#si esta abajod el minimo pongo el generadord e carbon, si es arriba del maximo dejo solo los paneles
 blt r1 minimo encender
-s generador On 0
+bgt r1 maximo apagar
 j inicio
 
 encender:
 s generador On 1
-sleep 2
+j inicio
+
+apagar:
+s generador On 0
 j inicio
