@@ -40,9 +40,11 @@ bgt r1 maximo apagar
 j inicio
 
 encender:
+s debug Color 5
 s generador On 1
 j inicio
 
 apagar:
+s debug Color 2
 s generador On 0
 j inicio
