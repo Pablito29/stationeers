@@ -1,26 +1,41 @@
+#ranura 1 poner sensor de gases dentro de la habitación 
 alias sensor d0
+#ranura 2 ventilador que alimenta el aire acondicionado 
 alias vent d1
 
+#temperatura objetivo
 define metatemp 25
+#tolerancia para evitar apagado frecuente 
 define delta 1
 
 inicio:
 yield
+#evita que explote el tubo debe ser mayor a la presión de la habitación para que el aire funcione pero no demasiado para evitar meter demasiado aire y que afecte la presión exterior al caño 
 s vent PressureInternal 500
+#load
 l r0 sensor Temperature
+#kelvin a centígrados 
 sub r0 r0 273
+#salta a apagar si es menor a objetivo
 bltal r0 metatemp apagar
+#salta encender si es más alta que objetivo con una tolerancia 
 add r1 metatemp delta
 bgtal r0 r1 encender
 
 j inicio
 
 encender:
+#el aire se pone en mode activo, que enfría
 s db Mode 1
+#store que la ventilación se encienda
 s vent On 1
+#vuelve a dónde fue el salto
 j ra
 
+
 apagar:
+#el aire no se apaga porque dejaría de correr este código, mode 0 es ahorro de energía 
 s db Mode 0
+#la ventilación se apaga
 s vent On 0
 j ra
