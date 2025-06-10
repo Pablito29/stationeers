@@ -1,54 +1,81 @@
+#ranura1 la funcdicion avanzada. Corroborar que este cerrada la entrada y salida y que este abierta
 alias fund d0
+#ranura 2 el clasificador logico. NO el normal
 alias sorter d1
+#ranura 3 la valvula de la tolva, puede ser izquierda o derecha
 alias debofiltrar d2
+#ranura4 el tranformador al que estan concetados todos los clasdiciadores logicos y apiladores (poner los apiladores en 500)
+#el codigod e los clasificadores esta en otro fuente.
 alias filtradores d3
 
+#950 porqeu todos los minerales se conviertenen en lingotes a menos
 define temp 950
+#mas de esta precsion no es necesaria
 define maxpres 10000
+#hay minerales que no funden a mneor presion
 define minpres 100
 
+#el logic sorter filtra el carbon mineral proqeu no requiere pasar por al fundicion
 sll r0 HASH("ItemCoalOre") 8
-
 or r0 r0 SorterInstruction.FilterPrefabHashEquals
 put sorter 0 r0
 
+s fund SettingOutput 0
+s fund SettingInput 0
+s fund Open 1
+
 inicio:
+#importante yield
 yield
+#veo si en el slot de la valvula hay algo, si hay tengo que filtrar, sino apago
 ls r0 debofiltrar 0 Occupied
 bnez r0 filtrasi
 beqz r0 filtrano
+#sigue
 contfiltra:
+#leo presion
 l r0 fund Pressure
+#si es talta ventilo, si es baja inyecto
 bgt r0 maxpres ventilar
 blt r0 minpres abrir
+#leo temperatura si es baja caliento
 l r0 fund Temperature
 blt r0 temp calentar
 j inicio
 
 ventilar:
+#abrir la salida
 s fund SettingOutput 30
+#espero
 yield
+#veo si sigue alta ventilo un poco mas
 l r0 fund Pressure
 bgt r0 maxpres ventilar
+#sino cierro
 s fund SettingOutput 0
 j inicio
 
 abrir:
 calentar:
+#generar calor y presion es lo mimso, primero inyecto
 s fund SettingInput 5
+#espoero
 yield
+#cierro y chispa apra que explote
 s fund SettingInput 0
 s fund Activate 1
+#espero la chispa
 yield
+#apago y reinicio
 s fund Activate 0
 j inicio
 
 filtrasi:
+#despues de encender espero un poco a que terminen de slair de los clasificadores
 s filtradores On 1
 sleep 2
 j contfiltra
 
 filtrano:
-sleep 1
 s filtradores On 0
 j contfiltra
