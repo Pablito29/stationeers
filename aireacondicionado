@@ -9,6 +9,7 @@ define metatemp 25
 define delta 1
 
 inicio:
+#yield previene saturar el integrado
 yield
 #evita que explote el tubo debe ser mayor a la presión de la habitación para que el aire funcione pero no demasiado para evitar meter demasiado aire y que afecte la presión exterior al caño 
 s vent PressureInternal 500
@@ -21,7 +22,7 @@ bltal r0 metatemp apagar
 #salta encender si es más alta que objetivo con una tolerancia 
 add r1 metatemp delta
 bgtal r0 r1 encender
-
+#volver a empezar 
 j inicio
 
 encender:
