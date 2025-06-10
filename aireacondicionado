@@ -1,0 +1,26 @@
+alias sensor d0
+alias vent d1
+
+define metatemp 25
+define delta 1
+
+inicio:
+yield
+s vent PressureInternal 500
+l r0 sensor Temperature
+sub r0 r0 273
+bltal r0 metatemp apagar
+add r1 metatemp delta
+bgtal r0 r1 encender
+
+j inicio
+
+encender:
+s db Mode 1
+s vent On 1
+j ra
+
+apagar:
+s db Mode 0
+s vent On 0
+j ra
