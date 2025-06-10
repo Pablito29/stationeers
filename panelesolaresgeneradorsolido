@@ -1,0 +1,27 @@
+alias sensor d0
+alias bateria d1
+alias generador d2
+alias debug d3
+
+define minimo 10
+
+inicio:
+yield
+l r0 sensor Vertical
+sb HASH("StructureSolarPanelDual") Vertical r0
+l r0 sensor Horizontal
+add r0 r0 90
+sb HASH("StructureSolarPanelDual") Horizontal r0
+
+l r0 bateria Ratio
+mul r1 r0 100
+round r0 r0
+s debug Setting r1
+blt r1 minimo encender
+s generador On 0
+j inicio
+
+encender:
+s generador On 1
+sleep 2
+j inicio
