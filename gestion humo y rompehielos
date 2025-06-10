@@ -1,0 +1,47 @@
+alias anal d0
+alias filtros d1
+alias humo d2
+alias pasar d3
+
+define presmin 500
+define delta 100
+
+inicio:
+yield
+lbs r0 HASH("StructureIceCrusher") 0 Occupied 3
+beqz r0 apagarrompe
+sb HASH("StructureIceCrusher") On 1
+pasarrompehielos:
+l r0 anal Pressure
+bgtal r0 presmin encender
+sub r1 presmin delta
+bltal r0 r1 apagar
+
+pasargases:
+l r0 anal Pressure
+bgt r0 1000 pasarno
+l r0 humo Pressure
+s db Setting r0
+beqz r0 pasarno
+l r0 humo Temperature
+sub r0 r0 273
+bgt r0 40 pasarno
+s pasar On 1
+terminopasar:
+j inicio
+
+pasarno:
+s pasar On 0
+j terminopasar
+
+encender:
+s filtros On 1
+j ra
+
+apagar:
+s filtros On 0
+j ra
+
+apagarrompe:
+sb HASH("StructureIceCrusher") On 0
+j pasarrompehielos
