@@ -1,0 +1,64 @@
+j inicio
+
+
+inicio:
+yield
+lbn r0 HASH("StructureGasSensor") HASH("sensor maquinas") Temperature 2
+sub r0 r0 273
+sbn HASH("StructureConsoleLED5") HASH("led temp") Setting r0
+#O2
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal O2") Pressure 2
+sbn HASH("StructureConsoleLED5") HASH("led O2") Color 6
+sbn HASH("StructureConsoleLED5") HASH("led O2") Setting r0
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal O2") RatioOxygen 2
+bltal r0 1 oxigen
+#N2
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal N2") Pressure 2
+sbn HASH("StructureConsoleLED5") HASH("led N2") Color 3
+sbn HASH("StructureConsoleLED5") HASH("led N2") Setting r0
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal N2") RatioNitrogen 2
+bltal r0 1 nitrogen
+#CO2
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal CO2") Pressure 2
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Color 1
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Setting r0
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal CO2") RatioCarbonDioxide 2
+bltal r0 1 carbon
+#H2
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal H2") Pressure 2
+sbn HASH("StructureConsoleLED5") HASH("led H2") Color 10
+sbn HASH("StructureConsoleLED5") HASH("led H2") Setting r0
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal H2") RatioVolatiles 2
+bltal r0 1 hydrogen
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal comb") Pressure 2
+#combustible
+sbn HASH("StructureConsoleLED5") HASH("led comb") Color 8
+#jal redon
+sbn HASH("StructureConsoleLED5") HASH("led comb") Setting r0
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal comb") RatioVolatiles 2
+bltal r0 0.6 comb
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal comb") RatioOxygen 2
+bltal r0 0.3 comb
+
+j inicio
+
+oxigen:
+sbn HASH("StructureConsoleLED5") HASH("led O2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led O2") Setting r0
+j ra
+nitrogen:
+sbn HASH("StructureConsoleLED5") HASH("led N2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led N2") Setting r0
+j ra
+carbon:
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Setting r0
+j ra
+hydrogen:
+sbn HASH("StructureConsoleLED5") HASH("led H2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led H2") Setting r0
+j ra
+comb:
+sbn HASH("StructureConsoleLED5") HASH("led comb") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led comb") Setting r0
+j ra
