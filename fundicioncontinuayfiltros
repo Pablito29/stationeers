@@ -1,0 +1,54 @@
+alias fund d0
+alias sorter d1
+alias debofiltrar d2
+alias filtradores d3
+
+define temp 950
+define maxpres 10000
+define minpres 100
+
+sll r0 HASH("ItemCoalOre") 8
+
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put sorter 0 r0
+
+inicio:
+yield
+ls r0 debofiltrar 0 Occupied
+bnez r0 filtrasi
+beqz r0 filtrano
+contfiltra:
+l r0 fund Pressure
+bgt r0 maxpres ventilar
+blt r0 minpres abrir
+l r0 fund Temperature
+blt r0 temp calentar
+j inicio
+
+ventilar:
+s fund SettingOutput 30
+yield
+l r0 fund Pressure
+bgt r0 maxpres ventilar
+s fund SettingOutput 0
+j inicio
+
+abrir:
+calentar:
+s fund SettingInput 5
+yield
+s fund SettingInput 0
+s fund Activate 1
+yield
+s fund Activate 0
+j inicio
+
+filtrasi:
+s filtradores On 1
+sleep 2
+j contfiltra
+
+filtrano:
+sleep 1
+s filtradores On 0
+j contfiltra
