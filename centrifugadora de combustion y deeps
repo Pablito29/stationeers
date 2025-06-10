@@ -1,0 +1,77 @@
+alias centr db
+alias debug d0
+alias debug2 d1
+
+define acel 10
+define maxrpm 300
+define temp 900
+
+inicio:
+yield
+lbn r0 HASH("StructureStackerReverse") HASH("apilador deeps") On 2
+lbns r0 HASH("StructureStackerReverse") HASH("apilador deeps") 1 Occupied 2
+s debug Setting r0
+beqz r0 encenderMineros
+sbn HASH("StructureTransformerSmall") HASH("deeps") On 0
+centrifugadora:
+s centr Open 0
+l r0 centr Rpm
+l r1 centr Stress
+s debug Color 1
+s debug Setting r1
+bgt r0 maxrpm procesa
+blt r1 30 acelerar
+bgt r1 90 reposar
+s centr Throttle 0
+j inicio
+
+encenderMineros:
+sbn HASH("StructureTransformerSmall") HASH("deeps") On 1
+j centrifugadora
+
+acelerar:
+yield
+l r0 centr Throttle
+#s debug2 Color 0
+add r0 r0 acel
+s centr Throttle r0
+#s debug2 Setting r0
+sleep 5
+j inicio
+
+procesa:
+yield
+s centr CombustionLimiter 0
+l r0 centr Temperature
+blt r0 temp calenta
+l r2 centr Stress
+bgt r2 50 reposar
+l r1 centr Reagents
+s debug2 Setting r1
+s debug2 Color 3
+bgt r1 300 parar
+j procesa
+
+calenta:
+s centr CombustionLimiter 1
+j procesa
+
+parar:
+yield
+l r1 centr Reagents
+s debug2 Setting r1
+blt r1 5 inicio
+s centr Open 1
+s centr Throttle 0
+s centr CombustionLimiter 0
+j parar
+
+reposar:
+yield
+s centr Throttle 0
+s centr CombustionLimiter 0
+l r2 centr Stress
+s debug Setting r2
+s debug Color 4
+beqz r2 inicio
+j reposar
