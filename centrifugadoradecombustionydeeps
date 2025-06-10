@@ -1,36 +1,52 @@
+#el chip va en la centrifugadora
 alias centr db
+#los leds pequeños en los puertos
 alias debug d0
 alias debug2 d1
 
+#se puede jugar con estos vlaores para mirar una mayor eficiciencia
 define acel 10
 define maxrpm 300
 define temp 900
 
 inicio:
+#yield importante
 yield
-lbn r0 HASH("StructureStackerReverse") HASH("apilador deeps") On 2
+#ojo con el hash hay apiladores de un aldo y del otro StructureStackerReverse y StructureStacker
+#leer por baches los apiladores elq ue se llama "apilador deeps". El slot 0. EL 2 del final es el minimo por si hay varios (nod eberia haber mas de uno)
 lbns r0 HASH("StructureStackerReverse") HASH("apilador deeps") 1 Occupied 2
 s debug Setting r0
+#si esta ocupado la centrifugadra tiene carga apra rato apagamos los mineros, sino los encendemos
 beqz r0 encenderMineros
 sbn HASH("StructureTransformerSmall") HASH("deeps") On 0
+#hagamos lo que hagamos hay que seguiior con le centrifugadora
 centrifugadora:
+#tinee que estar cerrada o se para
 s centr Open 0
+#leemos rpm y esctress
 l r0 centr Rpm
 l r1 centr Stress
 s debug Color 1
 s debug Setting r1
+#si llegamos al maximo RPm ya no subimos potencia
 bgt r0 maxrpm procesa
+#si no llegamos y no hay muhco estres acelera
 blt r1 30 acelerar
+#si hya muhco estres hay que hacer una parada de emergencia
 bgt r1 90 reposar
+#si llegue sin acelerar ni parar no aumento
 s centr Throttle 0
 j inicio
 
 encenderMineros:
+#enciendo un tranformador que alimenta los deeps miners
 sbn HASH("StructureTransformerSmall") HASH("deeps") On 1
 j centrifugadora
 
 acelerar:
+#esperar a que regularice
 yield
+#leo el acel
 l r0 centr Throttle
 #s debug2 Color 0
 add r0 r0 acel
