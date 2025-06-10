@@ -1,31 +1,49 @@
+#ranura 1 sensor gases habitación 
 alias sensor d0
+#ranura 2 ventilación a habitación conectada a tubo con oxígeno puro (ver filtros)
 alias ventO2 d1
+#idem anterior pero nitrógeno 
 alias ventN2 d2
+#otro idem pero con dióxido de carbono
 alias ventCO2 d3
 
+#las ventilaciónes deben inyectar gas en la habitación 
+s ventO2 Mode 0
+s ventN2 Mode 0
+s vemtCO2 Mode 0
+
+#para guardar la info
 alias pres r10
 alias O2 r11
 alias N2 r12
 alias CO2 r13
 alias temp r14
 
+#una atmósfera respirable puede tener hasta 75% de nitrógeno. el oxigeno es muy inflamable, microondas genera chispas
+#un poco de co2 es necesario para que crezcan las plantas.
+#la suma de todos debe ser un poco menos que la presión objetivo (70 aquí)
 define metaO2 25
 define metaN2 40
 define metaCO2 2
+#evita que la ventilación encienda y apague rapido
 define delta 1
 
 inicio:
+#yield importantes 
 yield
+#leer valores
 l temp sensor Temperature
 l pres sensor Pressure
 l O2 sensor RatioOxygen
 l N2 sensor RatioNitrogen
 l CO2 sensor RatioCarbonDioxide
 
+#la presión por el ratio da presión relativa actual.
 mul O2 O2 pres
 mul N2 N2 pres
 mul CO2 CO2 pres
 
+#avtualizar LEDs si existen se crean con consolas leds pequeños. nombrar con etiquetadora
 sub temp temp 273
 sbn HASH("StructureConsoleLED5") HASH("led temp") Setting temp
 sbn HASH("StructureConsoleLED5") HASH("led O2") Color 6
@@ -35,6 +53,9 @@ sbn HASH("StructureConsoleLED5") HASH("led N2") Setting N2
 sbn HASH("StructureConsoleLED5") HASH("led CO2") Color 1
 sbn HASH("StructureConsoleLED5") HASH("led CO2") Setting CO2
 
+#misma lógica para todos
+#si está por debajo del objetivo enciende y inyecta gas
+#si está por arriba con la tolerancia deja de inyectar
 bltal O2 metaO2 abrirO2
 add r0 metaO2 delta
 bgtal O2 r0 cerrarO2
