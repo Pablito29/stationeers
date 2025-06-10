@@ -6,34 +6,30 @@ alias sorter4 d3
 alias sorter5 d4
 alias sorter6 d5
 
-define lingoteIron HASH("ItemIronIngot")
-define lingoteCobre HASH("ItemCopperIngot")
-define lingoteOro HASH("ItemGoldIngot")
-define lingoteSilicona HASH("ItemSiliconIngot")
-define lingoteNikel HASH("ItemNickelIngot")
-define lingotePlata HASH("ItemSilverIngot")
-
-sll r0 lingoteIron 8
+#no se como funciona esto. Solo se que a cada puerto hayq ue ponerle el hash del elemento que queres que separe de los demas.
+#ni eida que es el 8 ni el or ni porque hay un punto ahi...
+#hay que usar clasificadores logicos, no de los normales.
+sll r0 HASH("ItemIronIngot") 8
 or r0 r0 SorterInstruction.FilterPrefabHashEquals
 put sorter1 0 r0
 
-sll r0 lingoteCobre 8
+sll r0 HASH("ItemCopperIngot") 8
 or r0 r0 SorterInstruction.FilterPrefabHashEquals
 put sorter2 0 r0
 
-sll r0 lingoteOro 8
+sll r0 HASH("ItemGoldIngot") 8
 or r0 r0 SorterInstruction.FilterPrefabHashEquals
 put sorter3 0 r0
 
-sll r0 lingoteSilicona 8
+sll r0 HASH("ItemSiliconIngot") 8
 or r0 r0 SorterInstruction.FilterPrefabHashEquals
 put sorter4 0 r0
 
-sll r0 lingoteNikel 8
+sll r0 HASH("ItemNickelIngot") 8
 or r0 r0 SorterInstruction.FilterPrefabHashEquals
 put sorter5 0 r0
 
-sll r0 lingotePlata 8
+sll r0 HASH("ItemSilverIngot") 8
 or r0 r0 SorterInstruction.FilterPrefabHashEquals
 put sorter6 0 r0
 
