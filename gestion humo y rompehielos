@@ -1,36 +1,53 @@
+#analizador de tubo justo antes del primer filtro
 alias anal d0
+#transformador que alimenta los filtros t generadores de presión 
 alias filtros d1
+#analizador de tuberías en el tubo de enfriado de humo. poner radiadores. 
 alias humo d2
+#generador de presión entre anal y humos
 alias pasar d3
 
+#presion mínima que activa los filtros. si es muy baja los filtros no trabajan a buena eficiencia 
 define presmin 500
 define delta 100
 
 inicio:
+#yield importantes
 yield
+#leo el slot 0 de todos los rompehielos conectados. 3 significa quédate con el macimo
 lbs r0 HASH("StructureIceCrusher") 0 Occupied 3
+#salta si el máximo es 0, todos son 0. están vacios
 beqz r0 apagarrompe
+#si no salto los enciendo, alguno tiene algo
 sb HASH("StructureIceCrusher") On 1
 pasarrompehielos:
+#leo presion
 l r0 anal Pressure
+#es mayor al mínimo es que debo actividad los filtros 
 bgtal r0 presmin encender
+#si es menor que la tolerancia es que ya está y apago
 sub r1 presmin delta
 bltal r0 r1 apagar
 
 pasargases:
+#si no hay gas para procesar, veo si puedo procesar el humo
 l r0 anal Pressure
 bgt r0 1000 pasarno
+#si no hay humo, no lo paso
 l r0 humo Pressure
 s db Setting r0
 beqz r0 pasarno
+#si la temperatura es alta no lo paso, el calor mata plantas y jugadores
 l r0 humo Temperature
 sub r0 r0 273
 bgt r0 40 pasarno
+#si no salto es que la presión es baja antes de los filtros, hay humo y no está muy caliente activo el paso
 s pasar On 1
 terminopasar:
 j inicio
 
 pasarno:
+#salteo el pasar humo 
 s pasar On 0
 j terminopasar
 
