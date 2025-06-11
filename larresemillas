@@ -1,0 +1,66 @@
+#larre de hiporponics
+alias larre d0
+#import bin o contenedor con tolva
+alias bin d1
+alias debug1 d2
+
+define deposito 1
+define base 0
+
+alias actual r10
+
+move actual 0
+
+inicio:
+yield
+add actual actual 1
+beq actual deposito inicio
+beq actual base inicio
+s debug1 Setting actual
+s larre Setting actual
+l r0 larre Setting
+bne r0 actual reinicia
+mover:
+yield
+l r0 larre Idle
+beqz r0 mover
+llegoaplanta:
+ls r0 larre 255 Seeding
+#s debug2 Setting r0
+bgtz r0 cosechar
+sleep 1
+j inicio
+
+reinicia:
+s larre On 0
+sleep 30
+s larre On 1
+move actual 0
+j inicio
+
+cosechar:
+s larre Activate 1
+yield
+ls r0 larre 255 Occupied
+bnez r0 cosechar
+s larre Setting deposito
+irdepo:
+yield
+l r0 larre Idle
+beqz r0 irdepo
+vaciargarra:
+s larre Activate 1
+yield
+ls r0 larre 1 Occupied
+bnez r0 vaciargarra
+s larre Setting actual
+irplantar:
+yield
+l r0 larre Idle
+beqz r0 irplantar
+s larre Activate 1
+s bin On 1
+s bin Open 0
+sleep 1
+s bin On 0
+j inicio
