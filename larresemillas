@@ -1,64 +1,88 @@
-#larre de hiporponics
+#larre de hidroponics
 alias larre d0
 #import bin o contenedor con tolva
 alias bin d1
+#debug posicicion
 alias debug1 d2
 
+#ea importante que quede claro en que "estación" está el bin para depositar lo cosechado
 define deposito 1
+#el número de la base también par saltear esa estación
+#todas las otras estaciones deben estar sobre bandejas hidropónicas, no hace falta que sean estaciónes ni tengan data, solo agua
 define base 0
 
+#guarda posicicion evaluada
 alias actual r10
 
-move actual 0
+#inicio, si hay estaciones negativas poner la más baja aquí
+define primera 0
+move actual primera
 
 inicio:
+#imortantr
 yield
+#suma uno a la estaopara pasar a la siguiente. 
 add actual actual 1
+#salte las estaciones de la base y el bin
 beq actual deposito inicio
 beq actual base inicio
 s debug1 Setting actual
+#se mueve a la estación que toca
 s larre Setting actual
 l r0 larre Setting
+#si no coincide es porque no existe debe reiniciar 
 bne r0 actual reinicia
 mover:
 yield
 l r0 larre Idle
+#repute hasta que esté ideal, o sea sin hacer nada, termino su tarea actual
 beqz r0 mover
 llegoaplanta:
+#lss plantas de semilla deben recolectarse cuando dieron semillas para replantarlas
 ls r0 larre 255 Seeding
-#s debug2 Setting r0
 bgtz r0 cosechar
 sleep 1
 j inicio
 
 reinicia:
+#aoagar un rato ahorro energía, las plantas crecen lento
 s larre On 0
-sleep 30
+sleep 120
 s larre On 1
-move actual 0
+#cambisr si hay negativas 
+move actual primera 
 j inicio
 
 cosechar:
+#recolecta
 s larre Activate 1
 yield
+#sibqueda algo, recoleta de nuevo. hasta que quede la bandeja vacia
 ls r0 larre 255 Occupied
 bnez r0 cosechar
+#ir al depósito 
 s larre Setting deposito
 irdepo:
 yield
+#eaperar a qué llegue
 l r0 larre Idle
 beqz r0 irdepo
 vaciargarra:
+#dejar contenido 
 s larre Activate 1
 yield
+#repetir hasta que el Hopper este vacío (y la semilla quedó en la garra)
 ls r0 larre 1 Occupied
 bnez r0 vaciargarra
 s larre Setting actual
 irplantar:
 yield
+#esperar a qué llegue
 l r0 larre Idle
 beqz r0 irplantar
+#plantar
 s larre Activate 1
+#activar el bin para que quede vacio
 s bin On 1
 s bin Open 0
 sleep 1
