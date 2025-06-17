@@ -1,0 +1,88 @@
+j inicio
+
+inicio:
+yield
+#leer temperatura y restar 273 para pasar de kelvin a Celsius
+#el 2 es el batchMode, 2 es minimo (idealmente hay un solo equipo con ese nombre, pero debe darse el modo)
+lbn r0 HASH("StructureGasSensor") HASH("sensor maquinas") Temperature 2
+sub r0 r0 273
+sbn HASH("StructureConsoleLED5") HASH("led temp") Setting r0
+#O2, leer presion redondear y color blanco
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal O2") Pressure 2
+round r0 r0
+sbn HASH("StructureConsoleLED5") HASH("led O2") Color 6
+sbn HASH("StructureConsoleLED5") HASH("led O2") Setting r0
+#si el radio de Oxigeno es mneor a 1 es que hay otro gas
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal O2") RatioOxygen 2
+bltal r0 1 oxigen
+#N2, leer presion redondear y color naranja
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal N2") Pressure 2
+round r0 r0
+sbn HASH("StructureConsoleLED5") HASH("led N2") Color 3
+sbn HASH("StructureConsoleLED5") HASH("led N2") Setting r0
+#si el radio de Nitrogeno es mneor a 1 es que hay otro gas
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal N2") RatioNitrogen 2
+bltal r0 1 nitrogen
+#CO2, leer presion redondear y color gris
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal CO2") Pressure 2
+round r0 r0
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Color 1
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Setting r0
+#si el radio de Dioxido de Carbono es mneor a 1 es que hay otro gas
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal CO2") RatioCarbonDioxide 2
+bltal r0 1 carbon
+#H2, leer presion redondear y color rosa
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal H2") Pressure 2
+round r0 r0
+sbn HASH("StructureConsoleLED5") HASH("led H2") Color 10
+sbn HASH("StructureConsoleLED5") HASH("led H2") Setting r0
+#si el radio de Hidrogeno es mneor a 1 es que hay otro gas
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal H2") RatioVolatiles 2
+bltal r0 1 hydrogen
+#H2, leer presion redondear y color marrron
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal comb") Pressure 2
+round r0 r0
+sbn HASH("StructureConsoleLED5") HASH("led comb") Color 8
+sbn HASH("StructureConsoleLED5") HASH("led comb") Setting r0
+#si menos del 60% es oxigeno es que el combustible no tiene la proporcion correcta
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal comb") RatioVolatiles 2
+bltal r0 0.6 comb
+#si menos del 30% es hidrogeno es que el combustible no tiene la proporcion correcta
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal comb") RatioOxygen 2
+bltal r0 0.3 comb
+
+#si el nitrogeno de las sala se menor a 80% pongo el aire para reprocesarlo si es mayo al 85% ya esta bien
+lb r1 HASH("StructureGasSensor") RatioNitrogen 2
+bltal r1 0.80 quitar
+bgtal r1 0.85 noquitar
+
+j inicio
+
+oxigen:
+sbn HASH("StructureConsoleLED5") HASH("led O2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led O2") Setting r0
+j ra
+nitrogen:
+sbn HASH("StructureConsoleLED5") HASH("led N2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led N2") Setting r0
+j ra
+carbon:
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Setting r0
+j ra
+hydrogen:
+sbn HASH("StructureConsoleLED5") HASH("led H2") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led H2") Setting r0
+j ra
+comb:
+sbn HASH("StructureConsoleLED5") HASH("led comb") Color 4
+sbn HASH("StructureConsoleLED5") HASH("led comb") Setting r0
+j ra
+
+quitar:
+sbn HASH("StructureActiveVent") HASH("quitar") On 1
+sbn HASH("StructureActiveVent") HASH("quitar") Mode 1
+j ra
+noquitar:
+sbn HASH("StructureActiveVent") HASH("quitar") On 0
+j ra
