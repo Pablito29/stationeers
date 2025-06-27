@@ -10,7 +10,7 @@ alias ventCO2 d3
 #las ventilaciónes deben inyectar gas en la habitación 
 s ventO2 Mode 0
 s ventN2 Mode 0
-s vemtCO2 Mode 0
+s ventCO2 Mode 0
 
 #para guardar la info
 alias pres r10
