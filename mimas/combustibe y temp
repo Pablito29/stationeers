@@ -1,0 +1,46 @@
+alias anal d0
+alias mixer d1
+alias sensor d2
+alias aire d3
+
+define mincomb 20000
+define metatemp 25
+
+inicio:
+yield
+l r0 anal Pressure
+bltal r0 mincomb mezcla
+add r1 mincomb 1000
+bgtal r0 r1 nomezcla
+l r0 sensor Temperature
+sub r0 r0 273
+add r1 metatemp 2
+bgtal r0 r1 airesi
+bltal r0 metatemp aireno
+sub r2 metatemp 2
+bltal r0 r2 heatersi
+bgtal r0 metatemp heaterno
+j inicio
+
+airesi:
+s aire On 1
+j ra
+aireno:
+s aire On 0
+j ra
+
+heatersi:
+sb HASH("StructureWallHeater") On 1
+j ra
+
+heaterno:
+sb HASH("StructureWallHeater") On 0
+j ra
+
+mezcla:
+s mixer On 1
+j ra
+
+nomezcla:
+s mixer On 0
+j ra
