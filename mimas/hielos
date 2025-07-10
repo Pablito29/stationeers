@@ -1,0 +1,27 @@
+define minpres 500
+
+inicio:
+yield
+lbn r0 HASH("StructurePipeAnalysizer") HASH("anal hielos") Pressure Minimum
+bgtal r0 minpres procesahielos
+sub r1 minpres 100
+bltal r0 r1 noprocesahielos
+
+lbs r0 HASH("StructureIceCrusher") 0 Occupied 3
+beqz r0 apagarrompe
+sb HASH("StructureIceCrusher") On 1
+pasarrompehielos:
+j inicio
+
+apagarrompe:
+
+sb HASH("StructureIceCrusher") On 0
+j pasarrompehielos
+
+procesahielos:
+sbn HASH("StructureAreaPowerControl") HASH("energia hielos") On 1
+j ra
+
+noprocesahielos:
+sbn HASH("StructureAreaPowerControl") HASH("energia hielos") On 0
+j ra
