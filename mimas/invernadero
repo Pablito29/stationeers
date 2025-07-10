@@ -1,0 +1,95 @@
+#ranura 1 sensor gases habitacin
+alias sensor d0
+#ranura 2 ventilacin a habitacin conectada a tubo con oxgeno puro (ver filtros)
+alias ventO2 d1
+#idem anterior pero nitrgeno
+alias ventN2 d2
+#otro idem pero con dixido de carbono
+alias ventCO2 d3
+
+#las ventilacines deben inyectar gas en la habitacin
+s ventO2 Mode 0
+s ventN2 Mode 0
+s ventCO2 Mode 0
+
+#para guardar la info
+alias pres r10
+alias O2 r11
+alias N2 r12
+alias CO2 r13
+alias temp r14
+
+#una atmsfera respirable puede tener hasta 75% de nitrgeno. el oxigeno es muy inflamable,
+#un poco de co2 es necesario para que crezcan las plantas.
+#la suma de todos debe ser un poco menos que la presin objetivo (70 aqu)
+define metaO2 25
+define metaN2 30
+define metaCO2 2
+#evita que la ventilacin encienda y apague rapido
+define delta 1
+
+inicio:
+#yield importantes
+yield
+#leer valores
+l temp sensor Temperature
+l pres sensor Pressure
+l O2 sensor RatioOxygen
+l N2 sensor RatioNitrogen
+l CO2 sensor RatioCarbonDioxide
+l r0 sensor RatioPollutant
+
+#la presin por el ratio da presin relativa actual.
+mul O2 O2 pres
+mul N2 N2 pres
+mul CO2 CO2 pres
+mul r0 r0 pres
+
+#avtualizar LEDs si existen se crean con consolas leds pequeos. nombrar con etiquetadora
+sub temp temp 273
+sbn HASH("StructureConsoleLED5") HASH("led temp") Setting temp
+sbn HASH("StructureConsoleLED5") HASH("led O2") Color 6
+sbn HASH("StructureConsoleLED5") HASH("led O2") Setting O2
+sbn HASH("StructureConsoleLED5") HASH("led N2") Color 3
+sbn HASH("StructureConsoleLED5") HASH("led N2") Setting N2
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Color 1
+sbn HASH("StructureConsoleLED5") HASH("led CO2") Setting CO2
+sbn HASH("StructureConsoleLED5") HASH("led pol") Color 11
+sbn HASH("StructureConsoleLED5") HASH("led pol") Setting r0
+
+#misma lgica para todos
+#si est por debajo del objetivo enciende y inyecta gas
+#si est por arriba con la tolerancia deja de inyectar
+bltal O2 metaO2 abrirO2
+add r0 metaO2 delta
+bgtal O2 r0 cerrarO2
+
+bltal N2 metaN2 abrirN2
+add r0 metaN2 delta
+bgtal N2 r0 cerrarN2
+
+bltal CO2 metaCO2 abrirCO2
+add r0 metaCO2 delta
+bgtal CO2 r0 cerrarCO2
+
+j inicio
+
+abrirO2:
+s ventO2 On 1
+j ra
+cerrarO2:
+s ventO2 On 0
+j ra
+abrirN2:
+s db Setting -22
+s ventN2 On 1
+j ra
+cerrarN2:
+s ventN2 On 0
+j ra
+abrirCO2:
+s ventCO2 On 1
+j ra
+cerrarCO2:
+s ventCO2 On 0
+j ra
