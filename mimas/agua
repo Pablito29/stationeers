@@ -1,0 +1,34 @@
+alias anal d0
+alias purga d1
+alias vaporanal d2
+alias compresor d3
+alias sensor d4
+
+inicio:
+yield
+l r0 anal RatioWater
+l r2 anal RatioSteam
+add r0 r0 r2
+l r1 anal VolumeOfLiquid
+s db Setting r1
+blt r1 0.1 vacio
+bge r0 0.99 soloagua
+s purga On 1
+s compresor On 0
+j inicio
+
+vacio:
+l r0 vaporanal Pressure
+blt r0 200 generar
+soloagua:
+s compresor On 0
+s purga On 0
+j inicio
+
+generar:
+l r0 sensor Temperature
+sub r0 r0 273
+bgt r0 60 soloagua
+s compresor On 1
+s purga On 0
+j inicio
