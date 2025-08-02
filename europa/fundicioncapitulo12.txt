@@ -1,0 +1,79 @@
+alias horno d0
+alias dialtemp d1
+alias ledtemp d2
+alias dialpres d3
+alias ledpres d4
+alias abierta d5
+
+alias metatemp r10
+alias temp r11
+alias metapres r12
+alias pres r13
+
+define presioniny 500
+define tiempoiny 0.5
+define tiempocarga 0.5
+
+s ledtemp Mode 0
+s ledpres Mode 0
+
+inicio:
+yield
+l r0 horno RecipeHash
+sbn HASH("StructureLogicMemory") HASH("rec") Setting r0
+l r0 abierta Open
+s horno Open r0
+
+l temp horno Temperature
+l pres horno Pressure
+round r0 temp
+s ledtemp Setting r0
+round r0 pres
+s ledpres Setting r0
+
+l metatemp dialtemp Setting
+mul metatemp metatemp 100
+l metapres dialpres Setting
+mul metapres metapres 1000
+
+bltal temp metatemp combustion
+bltal pres metapres subirpres
+add r0 metapres 1000
+bgtal pres r0 purga
+j inicio
+
+subirpres:
+blt temp metatemp combustion
+j airefrio
+
+airefrio:
+s db Setting 1
+sbn HASH("StructureActiveVent") HASH("iny frio") PressureInternal presioniny
+sbn HASH("StructureActiveVent") HASH("iny frio") On 1
+sleep tiempoiny
+sbn HASH("StructureActiveVent") HASH("iny frio") On 0
+s horno SettingInput 100
+sleep tiempocarga
+s horno SettingInput 0
+j ra
+
+combustion:
+s db Setting 2
+sbn HASH("StructurePressureRegulator") HASH("iny comb") Setting presioniny
+sbn HASH("StructurePressureRegulator") HASH("iny comb") On 1
+sleep tiempoiny
+sbn HASH("StructurePressureRegulator") HASH("iny comb") On 0
+s horno SettingInput 100
+sleep tiempocarga
+s horno SettingInput 0
+s horno Activate 1
+yield
+s horno Activate 0
+j ra
+
+purga:
+s db Setting 3
+s horno SettingOutput 30
+sleep 1
+s horno SettingOutput 0
+j ra
