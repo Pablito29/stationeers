@@ -1,0 +1,33 @@
+clr d0
+
+s d0 Mode 1
+
+sll r0 SortingClass.Ices 16
+sll r1 Equals 8
+or r0 r0 r1
+add r0 r0 SorterInstruction.FilterSortingClassCompare
+put d0 0 r0
+
+j fin
+clr d0
+
+s d0 Mode 1
+
+sll r0 HASH("ItemVolatiles") 8
+add r0 r0 1
+put d0 0 r0
+sll r0 HASH("ItemOxite") 8
+add r0 r0 1
+put d0 1 r0
+sll r0 HASH("ItemNitrice") 8
+add r0 r0 1
+put d0 2 r0
+sll r0 HASH("ItemIce") 8
+add r0 r0 1
+put d0 3 r0
+
+clr d1
+sll r0 HASH("ItemCoalOre") 8
+add r0 r0 1
+put d1 0 r0
+fin:
