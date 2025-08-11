@@ -1,0 +1,72 @@
+alias vend d0
+alias chute d1
+alias apila d2
+alias debug d3
+alias debug2 d4
+
+alias prefab r9
+alias original r10
+alias max r11
+alias stack r12
+alias cant r13
+
+move stack 100
+
+s apila Setting stack
+s chute SettingOutput 0
+s chute Setting 0
+
+reiniciar:
+move original 2
+j inicio
+
+inicio:
+yield
+ls r0 chute 0 Quantity
+move max stack
+ls r1 chute 0 Class
+beqal r1 10 esore
+beq r0 max afuera
+bnez r0 adentro
+finchute:
+s debug Setting original
+ls prefab vend original OccupantHash
+ls cant vend original Quantity
+#si no hay algo paso al sigueitne
+beqz prefab siguiente
+#pido lo que hay
+s db Setting cant
+s vend RequestHash prefab
+#si la cantidad de lo que pedi es del stack espero a que llegue
+beq cant stack siguiente
+yield
+#si no es del tamano adecuado pido mas
+s vend RequestHash prefab
+yield
+#s vend RequestHash prefab
+siguiente:
+sleep 1
+add original original 1
+bgt original 101 reiniciar
+sleep 1
+j inicio
+
+esore:
+move max 50
+j ra
+
+afuera:
+s debug2 Setting r0
+s chute Mode 1
+s chute On 1
+yield
+s chute On 0
+j inicio
+
+adentro:
+s debug2 Setting r0
+s chute Mode 0
+s chute On 1
+yield
+s chute On 0
+j inicio
