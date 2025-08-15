@@ -1,0 +1,23 @@
+
+define presgas 30000
+
+inicio:
+yield
+lbn r0 HASH("StructureLogicSwitch") HASH("exp1") Open Minimum
+s db Setting r0
+beqz r0 cerrarexp1
+sbn HASH("StructurePowerUmbilicalMale") HASH("exp1") On 1
+sbn HASH("StructurePowerUmbilicalMale") HASH("exp1") Open 1
+sbn HASH("StructureGasUmbilicalMale") HASH("exp1") On 1
+sbn HASH("StructureGasUmbilicalMale") HASH("exp1") Open 1
+finexp1:
+j inicio
+
+cerrarexp1:
+sbn HASH("StructurePowerUmbilicalMale") HASH("exp1") Open 0
+sbn HASH("StructureGasUmbilicalMale") HASH("exp1") Open 0
+sleep 1
+sbn HASH("StructurePowerUmbilicalMale") HASH("exp1") On 0
+sbn HASH("StructureGasUmbilicalMale") HASH("exp1") On 0
+
+j finexp1
