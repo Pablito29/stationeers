@@ -58,7 +58,6 @@ s debug Setting r1
 bgt r0 r1 inicio
 add r0 r0 acel
 s centr Throttle r0
-#s debug2 Setting r0
 j inicio
 
 procesa:
@@ -80,7 +79,6 @@ j procesa
 parar:
 yield
 jal deeps
-jal vercont
 #veo si esta vacia (menos de 5g es vacia porque peude haber 0.2 de algo entonces rara vez lelga a 0 el reagente)
 l r1 centr Reagents
 s debug2 Setting r1
@@ -90,7 +88,7 @@ s centr Throttle 0
 s centr CombustionLimiter 0
 #esperara a que este detenida
 l r0 centr Rpm
-blt r0 10 parar
+bgt r0 10 parar
 s centr Open 1
 j parar
 
