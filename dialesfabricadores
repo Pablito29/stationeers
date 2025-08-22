@@ -1,0 +1,87 @@
+alias hid r10
+alias ele r11
+alias tor r12
+
+move hid -1
+move ele -1
+move tor -1
+
+inicio:
+yield
+#si es -1 veo si reinicio
+bltz hid renhid
+#lo que queria generar menos los que ya hizo
+lb r0 HASH("StructureHydraulicPipeBender") ExportCount Minimum
+sub r1 hid r0
+#actualziao el dial
+sbn HASH("StructureLogicDial") HASH("hid") Setting r1
+#si es 0 termino
+beqz r1 nohid
+salhid:
+
+#idem pero otra maquina
+bltz ele renele
+lb r0 HASH("StructureElectronicsPrinter") ExportCount Minimum
+sub r1 ele r0
+sbn HASH("StructureLogicDial") HASH("ele") Setting r1
+beqz r1 noele
+salele:
+
+#idem pero otra maquina
+bltz tor rentor
+lb r0 HASH("StructureAutolathe") ExportCount Minimum
+sub r1 tor r0
+sbn HASH("StructureLogicDial") HASH("tor") Setting r1
+beqz r1 notor
+saltor:
+
+j inicio
+
+renhid:
+#si n mando a imprimir o si el dial esta en 0 no hago nada
+lb r0 HASH("StructureHydraulicPipeBender") Activate Minimum
+beqz r0 salhid
+lbn r0 HASH("StructureLogicDial") HASH("hid") Setting Minimum
+beqz r0 salhid
+#si esta imprimiendo y hid esta en -1 y hay algo ene l dial debo guardar el valor
+move hid r0
+# y limpiar memoria para que empiece a contar
+sb HASH("StructureHydraulicPipeBender") ClearMemory 1
+j salhid
+
+nohid:
+#reinicio todo y apago la mauina, ya imprimio lo que debia
+move hid -1
+sb HASH("StructureHydraulicPipeBender") On 0
+j salhid
+
+renele:
+#si n mando a imprimir o si el dial esta en 0 no hago nada
+lb r0 HASH("StructureElectronicsPrinter") Activate Minimum
+beqz r0 salele
+lbn r0 HASH("StructureLogicDial") HASH("ele") Setting Minimum
+beqz r0 salele
+move ele r0
+sb HASH("StructureElectronicsPrinter") ClearMemory 1
+j salele
+
+noele:
+move ele -1
+sb HASH("StructureElectronicsPrinter") On 0
+j salele
+
+rentor:
+#si n mando a imprimir o si el dial esta en 0 no hago nada
+lb r0 HASH("StructureAutolathe") Activate Minimum
+s db Setting r0
+beqz r0 saltor
+lbn r0 HASH("StructureLogicDial") HASH("tor") Setting Minimum
+beqz r0 saltor
+move tor r0
+sb HASH("StructureAutolathe") ClearMemory 1
+j saltor
+
+notor:
+move tor -1
+sb HASH("StructureAutolathe") On 0
+j saltor
