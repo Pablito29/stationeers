@@ -1,0 +1,107 @@
+alias centr db
+#leds
+alias debug d0
+alias debug2 d1
+
+alias estres r11
+define acel 10
+define maxrpm 350
+define temp 900
+define vaciar 200
+
+inicio:
+yield
+jal deeps
+jal vercont
+centrifugadora:
+#error es que esta llena o hay algo adentro que no puede porcesar, lo mejor es purgarla
+l r0 centr Error
+bnez r0 parar
+s centr Open 0
+l r0 centr Rpm
+l r1 centr Stress
+#con esto veo si el estres es mas que antes, si el estres sube mas del 2% pot tick mejor la paro
+sub r2 r1 estres
+move estres r1
+bgt r2 2 reposar
+#si tiene la velocidad maxima entra en "modo crucero"
+bgt r0 maxrpm procesa
+#sino veo como anda de estres, si es bajo le doy caña si es alto la detengo
+blt estres 30 acelerar
+bgt estres 80 reposar
+s centr Throttle 0
+j inicio
+
+#encender miners y ver si esta llena de reagentes utiles
+deeps:
+lbns r0 HASH("StructureStacker") HASH("apilador deeps") 1 Occupied 2
+s debug2 Setting r0
+seqz r0 r0
+sbn HASH("StructureTransformerSmall") HASH("deeps") On r0
+j ra
+vercont:
+l r1 centr Reagents
+s debug2 Setting r1
+s debug2 Color 3
+bgt r1 vaciar parar
+j ra
+
+acelerar:
+yield
+jal deeps
+jal vercont
+l r0 centr Throttle
+l r1 db Rpm
+div r1 r1 10
+add r1 r1 10
+s debug Setting r1
+bgt r0 r1 inicio
+add r0 r0 acel
+s centr Throttle r0
+#s debug2 Setting r0
+j inicio
+
+procesa:
+yield
+jal deeps
+jal vercont
+# modo crucero, solo mantiene temperatura y ve que no suba mucho el estres
+s centr CombustionLimiter 0
+l r0 centr Temperature
+blt r0 temp calenta
+l r2 centr Stress
+bgt r2 50 reposar
+j procesa
+
+calenta:
+s centr CombustionLimiter 1
+j procesa
+
+parar:
+yield
+jal deeps
+jal vercont
+#veo si esta vacia (menos de 5g es vacia porque peude haber 0.2 de algo entonces rara vez lelga a 0 el reagente)
+l r1 centr Reagents
+s debug2 Setting r1
+blt r1 5 inicio
+#apagar todo
+s centr Throttle 0
+s centr CombustionLimiter 0
+#esperara a que este detenida
+l r0 centr Rpm
+blt r0 10 parar
+s centr Open 1
+j parar
+
+reposar:
+yield
+jal deeps
+jal vercont
+s centr Throttle 0
+s centr CombustionLimiter 0
+l r2 centr Stress
+s debug Setting r2
+s debug Color 4
+beqz r2 inicio
+j reposar
