@@ -1,0 +1,124 @@
+alias printer r11
+alias receta r10
+alias printerId r12
+alias cantidad r13
+alias temp r14
+alias pedir r15
+
+alias torno d0
+
+define hasmemo HASH("StructureLogicMemory")
+define hashvending HASH("StructureVendingMachine")
+define hashchute HASH("StructureChuteDigitalFlipFlopSplitterRight")
+
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Setting 0
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") Setting 0
+
+main:
+yield
+lbn r0 HASH("StructureLogicSwitch") HASH("exportar") Open Minimum
+sbn hashchute HASH("exp") Mode r0
+sbn hashchute HASH("exp") SettingOutput r0
+lbn r0 hasmemo HASH("maquina") Setting Minimum
+lbn r1 hasmemo HASH("cantidad") Setting Minimum
+beqz r0 main
+beqz r1 main
+sbn HASH("StructureLogicSwitch") HASH("exportar") Open 0
+sbn hashchute HASH("exp") Mode 0
+sbn hashchute HASH("exp") Setting 0
+move printer r0
+move cantidad r1
+sbn hasmemo HASH("maquina") Setting 0
+sbn hasmemo HASH("cantidad") Setting 0
+#guardo el id de la impresora y el hashde la receta que esta seleccionada
+lb printerId printer ReferenceId Minimum
+lb receta printer RecipeHash Minimum
+#muestro el has de la receta y limpio los otros
+sbn hasmemo HASH("mat1") Setting receta
+sbn hasmemo HASH("mat2") Setting 0
+sbn hasmemo HASH("mat3") Setting 0
+sbn hasmemo HASH("mat4") Setting 0
+sbn hasmemo HASH("mat5") Setting 0
+sbn hasmemo HASH("mat6") Setting 0
+#en cuanto tengas los ingreditente imprimi
+or r0 0 PrinterInstruction.WaitUntilNextValid
+clrd printerId
+putd printerId 1 r0
+sll r1 cantidad 8
+sll r2 receta 16
+or r1 r1 r2
+or r1 r1 PrinterInstruction.ExecuteRecipe
+#genera 0000 0002 0000 0008 0A0C DFF4 agrega el 2 como viene orqeu esta al principio
+putd printerId 2 r1
+sleep 1
+beqal printer HASH("StructureAutolathe") vator
+beqal printer HASH("StructureHydraulicPipeBender") vahid
+beqal printer HASH("StructureElectronicsPrinter") vaele
+getd temp printerId 54
+#quito los primeros 16 bites que son el codigo de operacion y la cnatidad, los ignoro
+sra temp temp 16
+#conveirte de ingrediente a hash
+rmap temp torno temp
+#lo pongo en la memoria para que aparezca en la pantalla
+sbn hasmemo HASH("mat2") Setting temp
+#se lo pdio a la expendedora
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+#repito para todas las siguientes
+getd temp printerId 55
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat3") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 56
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat4") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 57
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat5") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 58
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat6") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+#solo muestro 5, en adelante no los muestro
+getd temp printerId 59
+sra temp temp 16
+rmap temp torno temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 60
+sra temp temp 16
+rmap temp torno temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 61
+sra temp temp 16
+rmap temp torno temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+j main
+
+vator:
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Mode 0
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") Mode 0
+j ra
+
+vahid:
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Mode 1
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") SettingOutput 50
+j ra
+
+vaele:
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Mode 0
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") Mode 1
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") SettingOutput 50
+j ra
