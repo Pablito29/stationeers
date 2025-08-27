@@ -1,0 +1,157 @@
+#ESTE CODIGO NO PUDE SER COLOCADO EN IC, NO ENTRA
+#usar el que no tien comentarios y usar este como referencia
+alias printer r11
+alias receta r10
+alias printerId r12
+alias cantidad r13
+alias temp r14
+alias pedir r15
+
+alias torno d0
+
+#los define ayudan a horrar bytes de codiego IC, son menos letras
+define hasmemo HASH("StructureLogicMemory")
+define hashvending HASH("StructureVendingMachine")
+define hashchute HASH("StructureChuteDigitalFlipFlopSplitterRight")
+
+#los chutes que mandan a una maquina u otra no deberian cambiar su Mode
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Setting 0
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") Setting 0
+
+main:
+yield
+#esta palanca permite mandar lo que sale de la expendedora a salida manual
+lbn r0 HASH("StructureLogicSwitch") HASH("exportar") Open Minimum
+#este chute manda a la salida manual
+sbn hashchute HASH("exp") Mode r0
+sbn hashchute HASH("exp") SettingOutput r0
+#debo leer qe hay en las memorias, que seteo el IC de limitadores
+lbn r0 hasmemo HASH("maquina") Setting Minimum
+lbn r1 hasmemo HASH("cantidad") Setting Minimum
+#si cualquiera esta en cero no hago nada
+beqz r0 main
+beqz r1 main
+#si ambos tiene aglo tengo que madnar asi que no mando a la salida manual
+sbn HASH("StructureLogicSwitch") HASH("exportar") Open 0
+sbn hashchute HASH("exp") Mode 0
+sbn hashchute HASH("exp") Setting 0
+#guardo la impresora que hay que usar y la cantidad
+move printer r0
+move cantidad r1
+#y los borro para no leerlos sin querer
+sbn hasmemo HASH("maquina") Setting 0
+sbn hasmemo HASH("cantidad") Setting 0
+#guardo el id de la impresora y el hash de la receta que esta seleccionada en ella
+lb printerId printer ReferenceId Minimum
+lb receta printer RecipeHash Minimum
+#muestro el hash de la receta seleccionada y limpio los otros
+sbn hasmemo HASH("mat1") Setting receta
+sbn hasmemo HASH("mat2") Setting 0
+sbn hasmemo HASH("mat3") Setting 0
+sbn hasmemo HASH("mat4") Setting 0
+sbn hasmemo HASH("mat5") Setting 0
+sbn hasmemo HASH("mat6") Setting 0
+#limpio el stack de la impresora por las dudas
+clrd printerId
+#le digo a la impresora que en cuanto tenga los ingreditentes imprima
+or r0 0 PrinterInstruction.WaitUntilNextValid
+putd printerId 1 r0
+#ejecuteo la receta con la configuracion eleccionada para eso hay que aramr la instruccion
+#es un numero de 32 bytes, 8 para la orden, 8 para la cantidad y 16 para la receta,
+#supongoamos 2 puertas (hash 168615924, en heagesimal A0CDFF4) el numero seria
+# 0000 0002 0000 0008 0A0C DFF4
+sll r1 cantidad 8
+#genera 0000 0000 0000 0008 0000 0000 la cantidadd del byte 8 al 15
+sll r2 receta 16
+#genera 0000 0000 0000 0000 0A0C DFF4 el receta del btye 16 al 31
+or r1 r1 r2
+#genera 0000 0000 0000 0008 0A0C DFF4 el "agregado" de los dos anteriores
+or r1 r1 PrinterInstruction.ExecuteRecipe
+#genera 0000 0002 0000 0008 0A0C DFF4 (agrega el 2, el OP_CODE como viene porque esta al principio)
+putd printerId 2 r1
+#esperar a que la imresora procese la orden
+sleep 1
+#dependiendo de la impresora que hayq ue usar, hay que setear los chutes para que lleguen a ella
+beqal printer HASH("StructureAutolathe") vator
+beqal printer HASH("StructureHydraulicPipeBender") vahid
+beqal printer HASH("StructureElectronicsPrinter") vaele
+#luego puedo leer los ingredientes (no vi recetas de mas de 8 ingredientes)
+#en la posicion 54 en adelante estan los ingredientes
+getd temp printerId 54
+#quito los primeros 16 bites que son el codigo de operacion y la cantidad, los ignoro
+sra temp temp 16
+#conveirte de ingrediente a hash
+rmap temp torno temp
+#lo pongo en la memoria para que aparezca en la pantalla
+sbn hasmemo HASH("mat2") Setting temp
+#se lo pido a la expendedora
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+#repito para todas las siguientes
+getd temp printerId 55
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat3") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 56
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat4") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 57
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat5") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 58
+sra temp temp 16
+rmap temp torno temp
+sbn hasmemo HASH("mat6") Setting temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+#solo muestro 5, en adelante no los muestro
+getd temp printerId 59
+sra temp temp 16
+rmap temp torno temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 60
+sra temp temp 16
+rmap temp torno temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+getd temp printerId 61
+sra temp temp 16
+rmap temp torno temp
+sbn hashvending HASH("fabricadores") RequestHash temp
+sleep 1
+j main
+
+vator:
+#el torno es la ultima, todo en modo 0 para que siga derecho
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Mode 0
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") Mode 0
+j ra
+
+vahid:
+#lad obladora es la primera pongoq ue todo salga, y pongo un valr para que no cambie el modo sola
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Mode 1
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") SettingOutput 50
+j ra
+
+vaele:
+#es la de en medio, siguene en la hidraulica y salen pogo un output para que no cambie el mode
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("hid") Mode 0
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") Mode 1
+sbn HASH("StructureChuteDigitalFlipFlopSplitterRight") HASH("ele") SettingOutput 50
+j ra
+
+
+
+
+
+
+
