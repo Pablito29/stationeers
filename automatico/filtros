@@ -1,0 +1,119 @@
+sb HASH("StructureStacker") Setting 500
+sb HASH("StructureStackerReverse") Setting 500
+
+define st1 HASH("StructureStacker")
+define st2 HASH("StructureStackerReverse")
+define sor HASH("StructureLogicSorter")
+
+lbn r1 sor HASH("1") ReferenceId Minimum
+sll r0 HASH("ItemCharcoal") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("2") ReferenceId Minimum
+sll r0 HASH("ItemCobaltOre") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("3") ReferenceId Minimum
+sll r0 HASH("ItemUraniumOre") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("4") ReferenceId Minimum
+sll r0 HASH("ItemCopperIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("5") ReferenceId Minimum
+sll r0 HASH("ItemGoldIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("6") ReferenceId Minimum
+sll r0 HASH("ItemIronIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("7") ReferenceId Minimum
+sll r0 HASH("ItemLeadIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("8") ReferenceId Minimum
+sll r0 HASH("ItemNickelIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("9") ReferenceId Minimum
+sll r0 HASH("ItemSiliconIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("10") ReferenceId Minimum
+sll r0 HASH("ItemSilverIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("11") ReferenceId Minimum
+sll r0 HASH("ItemConstantanIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("12") ReferenceId Minimum
+sll r0 HASH("ItemElectrumIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("13") ReferenceId Minimum
+sll r0 HASH("ItemInvarIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("14") ReferenceId Minimum
+sll r0 HASH("ItemSolderIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("15") ReferenceId Minimum
+sll r0 HASH("ItemSteelIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("16") ReferenceId Minimum
+sll r0 HASH("ItemAstroloyIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("17") ReferenceId Minimum
+sll r0 HASH("ItemHastelloyIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("18") ReferenceId Minimum
+sll r0 HASH("ItemInconelIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+j inicio
+lbn r1 sor HASH("19") ReferenceId Minimum
+sll r0 HASH("ItemStelliteIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+lbn r1 sor HASH("20") ReferenceId Minimum
+sll r0 HASH("ItemWaspaloyIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+putd r1 0 r0
+inicio:
+yield
+lbs r0 HASH("StructureChuteDigitalValveRight") 0 Occupied Maximum
+bnez r0 enciende
+lbn r0 HASH("StructureLogicSwitch") HASH("purgalingotes") Open Maximum
+bnez r0 purgatodo
+j inicio
+
+enciende:
+sb HASH("StructureChuteDigitalValveRight") Open 1
+sb HASH("StructureLogicSorter") On 1
+sb st1 On 1
+sb st2 On 1
+sleep 5
+sb HASH("StructureLogicSorter") On 0
+sb st1 On 0
+sb st2 On 0
+sb HASH("StructureChuteDigitalValveRight") Open 0
+j inicio
+
+purgatodo:
+sb st1 On 1
+sb st2 On 1
+sleep 2
+sb st1 Activate 1
+sb st2 Activate 1
+sleep 2
+sb st1 On 0
+sb st2 On 0
+sbn HASH("StructureLogicSwitch") HASH("purgalingotes") Open 0
+j inicio
