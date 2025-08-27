@@ -1,0 +1,71 @@
+#limpio stack y digoq ue si cumple cualquiera
+clr d0
+s d0 Mode 1
+#meto los hash de todos los lingotes ue pueden usarse para crear cosas
+sll r0 HASH("ItemIronIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 0 r0
+sll r0 HASH("ItemCopperIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 1 r0
+sll r0 HASH("ItemGoldIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 2 r0
+sll r0 HASH("ItemSiliconIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 3 r0
+sll r0 HASH("ItemSilverIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 4 r0
+sll r0 HASH("ItemSteelIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 5 r0
+sll r0 HASH("ItemSolderIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 6 r0
+sll r0 HASH("ItemElectrumIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 7 r0
+sll r0 HASH("ItemInvarIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 8 r0
+sll r0 HASH("ItemConstantanIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 9 r0
+sll r0 HASH("ItemAstroloyIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 10 r0
+sll r0 HASH("ItemHastelloyIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 11 r0
+sll r0 HASH("ItemInconelIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 12 r0
+sll r0 HASH("ItemStelliteIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 13 r0
+sll r0 HASH("ItemWaspaloyIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 14 r0
+sll r0 HASH("ItemNickelIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 14 r0
+sll r0 HASH("ItemLeadIngot") 8
+or r0 r0 SorterInstruction.FilterPrefabHashEquals
+put d0 15 r0
+
+inicio:
+yield
+#leer la clase de una tolva, sin utilidad
+#ls r0 d5 0 SortingClass
+#s db Setting r0
+#si cabiaron la maquina es que hay que vaciar el apilador
+lbn r1 HASH("StructureLogicMemory") HASH("maquina") Setting Minimum
+bnezal r1 apilador
+j inicio
+
+apilador:
+sbn HASH("StructureStacker") HASH("Apilador terminados") Activate 1
+yield
+sbn HASH("StructureStacker") HASH("Apilador terminados") Activate 0
+j ra
