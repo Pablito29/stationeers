@@ -1,0 +1,34 @@
+lb r5 HASH("StructureLogicSorter") ReferenceId 0
+clrd r5
+sb HASH("StructureLogicSorter") Mode 1
+
+sll r0 SortingClass.Ores 16
+sll r1 NotEquals 8
+or r0 r0 r1
+add r0 r0 SorterInstruction.FilterSortingClassCompare
+putd r5 0 r0
+
+inicio:
+yield
+
+lb r0 HASH("StructureFurnace") Temperature 0
+slt r0 r0 375
+sb HASH("StructurePipeHeater") On r0
+sb HASH("StructureVolumePump") On r0
+
+lb r0 HASH("StructureAdvancedFurnace") Pressure 0
+sgt r0 r0 2000
+mul r0 r0 10
+sb HASH("StructureAdvancedFurnace") SettingOutput r0
+
+lb r0 HASH("StructureAdvancedFurnace") Temperature 0
+blt r0 1050 expl
+j inicio
+
+expl:
+sb HASH("StructureAdvancedFurnace") SettingOutput 0
+sb HASH("StructureAdvancedFurnace") SettingInput 5
+sleep 1
+sb HASH("StructureAdvancedFurnace") SettingInput 0
+sb HASH("StructureAdvancedFurnace") Activate 1
+j inicio
